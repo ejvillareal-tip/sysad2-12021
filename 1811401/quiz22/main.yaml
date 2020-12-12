@@ -1,0 +1,96 @@
+---
+# ansible-playbook main.yaml
+
+- name: Installing of Apache and configuring new users and packges on Ubuntu 20.04
+  hosts: ubuntu
+
+  tasks:
+  - name: Install apache2
+    apt:
+      name: apache2
+      state: latest
+      update_cache: no # ubuntu raise error when it's enable
+
+  - name: create Apache host index.html
+    copy:
+      content: "Hello World -created apache index.html"
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: "0644"
+    register: apache_index
+
+  - name: Start apache2 service
+    service:
+      name: apache2
+      state: restarted
+      enabled: yes
+    when: apache_index.changed
+
+  - name: whitelist apache2 in ufw
+    ufw:
+      rule: allow
+      port: '80'
+      protocol: tcp 
+  
+  - name: enable ufw
+    ufw:
+      state: disabled
+
+- name: Check web service if up
+  hosts: localhost
+  connection: local
+  become: no
+
+  tasks:
+  - name: Check web service if up
+    uri: 
+      url: http://192.168.0.10/
+  
+- name: Install and Configure MySQL on Ubuntu 20.04
+  hosts: ubuntu
+
+  tasks:
+    - name: Install Mysql-server
+      apt:
+        name: mysql-server
+        state: latest
+        update_cache: no #ubuntu raise an error when enabled
+
+    - name: Creating MySQL host index.html
+      copy:
+        content: "Hello World -created MySQL host index.html"
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: "0644"
+      register: mysql_index
+
+    - name: Start MySQL-server
+      service:
+        name: mysql
+        state: restarted
+        enabled: yes
+      when: mysql_index.changed
+
+- name: Install and Configure PHP on Ubuntu 20.04
+  hosts: ubuntu
+
+  tasks:
+    - name: Install PHP
+      apt:
+        name:
+          - php
+          - libapache2-mod-php
+          - php-mysql
+        state: latest
+        update_cache: no # ubuntu raise an error when its enabled
+
+    - name: Creating PHP host index.html
+      copy:
+        content: "Hello World -created PHP host index.html"
+        dest: /var/www/html/index.html
+        owner: root
+        group: root
+        mode: "0644"
+      
