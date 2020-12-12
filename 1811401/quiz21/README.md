@@ -6,7 +6,7 @@
 
 # How to create an Ansible Inventory
 1. Create first the inventory file
-**_NOTE:_** Your inventory file name must be the same on your inventory variable in `ansible.cfg`
+> NOTE: Your inventory file name must be the same on your inventory variable in `ansible.cfg`
 2. Write down the IP addresses of your hosts
 3. Then save the inventory file
 
