@@ -1,0 +1,20 @@
+---
+# ansible-playbook main.yaml
+
+# run tasks for install-using-pip
+- hosts: "*"
+
+  roles: 
+    - install-using-pip
+
+# run tasks for install-java-centos
+- hosts: centos
+
+  roles:
+    - install-java-centos
+
+# run tasks for install-java-ubuntu
+- hosts: ubuntu
+
+  roles:
+    - install-java-ubuntu

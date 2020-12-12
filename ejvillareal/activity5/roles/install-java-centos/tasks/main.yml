@@ -1,0 +1,8 @@
+---
+# tasks file for roles/install-java-centos
+
+- name: Install Java
+  yum:
+    name: java-1.8.0-openjdk
+    state: latest
+    update_cache: yes

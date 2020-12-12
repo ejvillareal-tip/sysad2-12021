@@ -1,0 +1,8 @@
+---
+# tasks file for roles/install-java-ubuntu
+
+- name: Install Java
+  apt:
+    name: default-jre
+    state: latest
+    update_cache: yes

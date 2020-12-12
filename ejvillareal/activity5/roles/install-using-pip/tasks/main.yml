@@ -1,0 +1,9 @@
+---
+# tasks file for roles/install-using-pip
+
+- name: Install ansible, boto, and openstack via pip
+  pip:
+    name:
+      - ansible
+      - boto
+      - python-openstackclient
