@@ -1,0 +1,10 @@
+---
+# ansible-playbook copyFile.yml
+
+- name: run tasks on hosts
+  hosts: "*"
+  tasks:
+     - name: copy file to remote host
+       copy:
+         src: testFile
+         dest: $HOME/testFile
