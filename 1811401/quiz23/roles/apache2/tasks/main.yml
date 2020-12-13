@@ -1,0 +1,34 @@
+---
+# tasks file for roles/apache2
+
+- name: Install apache2
+  apt:
+    name: apache2
+    state: latest
+    update_cache: no # ubuntu raise an error when it's enable
+
+- name: create Apache host index.html
+  copy:
+    content: "Hello World -created apache index.html -Quiz2.3"
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: "0644"
+  register: apache_index
+
+- name: Start apache2 service
+  service:
+    name: apache2
+    state: restarted
+    enabled: yes
+  when: apache_index.changed
+
+- name: Whitelist apache2 in ufw
+  ufw:
+    rule: allow
+    port: '80'
+    protocol: tcp
+
+- name: enable ufw
+  ufw:
+    state: disabled

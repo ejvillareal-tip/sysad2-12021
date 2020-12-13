@@ -1,0 +1,18 @@
+---
+# ansible-playbook main.yaml
+
+- name: Install and Configure Apache2, MySQL, and PHP on Ubuntu 20.04
+  hosts: ubuntu
+  
+  roles:
+    - apache2
+    - MySQL
+    - PHP
+
+- name: Check web service if up
+  hosts: localhost
+  connection: local
+  become: no
+  
+  roles:
+    - Check-Web-Service

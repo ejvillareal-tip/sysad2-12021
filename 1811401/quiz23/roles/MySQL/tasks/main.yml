@@ -1,0 +1,24 @@
+---
+# tasks file for roles/MySQL
+
+- name: Install MySQL-server
+  apt:
+    name: mysql-server
+    state: latest
+    update_cache: no # ubuntu raise an error when it's enable
+
+- name: Creating MySQL host index.html
+  copy:
+    content: "Hello World -create MySQL host index.html -Quiz2.3"
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: "0644"
+  register: mysql_index
+
+- name: Start MySQL-server
+  service:
+    name: mysql
+    state: restarted
+    enabled: yes
+  when: mysql_index.changed
