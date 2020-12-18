@@ -1,0 +1,53 @@
+---
+# tasks file for roles/configure_ubuntu
+
+- name: stop firewall
+  service:
+    name: ufw
+    state: stopped
+    enabled: no
+
+- name: Create user for ftp
+  user:
+    name: ftp-ervie-ubuntu
+    password: $5$EnmDiBAsdQYoa.ah$b1Hmf3n9MpBaGkoy3PgPBW6tHVq5FPNkoj06Sjt4GH5
+    comment: "ftp-ervie-ubuntu user"
+  
+- name: add DenyUsers in /etc/ssh/sshd_config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "DenyUsers ftp-ervie-ubuntu"
+  register: sshd_config
+
+- name: restart sshd service
+  service:
+    name: sshd
+    state: restarted
+  when: sshd_config.changed
+
+- name: Create ftp directory
+  file:
+    path: /home/ftp-ervie-ubuntu/ftp
+    state: directory
+    owner: nobody
+    group: nogroup
+    mode: '0555'
+
+- name: Create files directory
+  file:
+    path: /home/ftp-ervie-ubuntu/ftp/files
+    state: directory
+    owner: ftp-ervie-ubuntu
+    group: ftp-ervie-ubuntu
+    
+- name: Copy vsftpd.conf in /etc/vsftpd.conf
+  copy:
+    src: vsftpd.conf
+    dest: /etc/vsftpd.conf
+  register: vsftpd_config
+
+- name: Restart vsftpd for vsftpd.conf
+  service:
+    name: vsftpd
+    state: restarted
+  when: vsftpd_config.changed

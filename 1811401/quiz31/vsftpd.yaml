@@ -1,0 +1,13 @@
+---
+
+- name: Install and Configure vsftpd on ubuntu
+  hosts: ubuntu_ftp
+  roles:
+    - vsftpd_ubuntu
+    - configure_ubuntu
+
+- name: Install and configure vsftpd on centos
+  hosts: centos_ftp
+  roles:
+    - vsftpd_centos
+    - configure_centos
