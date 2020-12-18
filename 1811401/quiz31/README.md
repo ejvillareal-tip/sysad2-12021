@@ -1,81 +1,78 @@
-# Install vstpd on Ubuntu and Centos using ansible-playbook
+# Install vsftpd on Ubuntu and CentOS using ansible-playbook
 
 ### Directory Structure
-sysad2-12021/1811401/
-└── quiz31
-    ├── README.md
-    ├── ansible.cfg
-    ├── inventory
-    ├── roles
-    │   ├── configure_centos
-    │   │   ├── README.md
-    │   │   ├── defaults
-    │   │   │   └── main.yml
-    │   │   ├── files
-    │   │   ├── handlers
-    │   │   │   └── main.yml
-    │   │   ├── meta
-    │   │   │   └── main.yml
-    │   │   ├── tasks
-    │   │   │   └── main.yml
-    │   │   ├── templates
-    │   │   ├── tests
-    │   │   │   ├── inventory
-    │   │   │   └── test.yml
-    │   │   └── vars
-    │   │       └── main.yml
-    │   ├── configure_ubuntu
-    │   │   ├── README.md
-    │   │   ├── defaults
-    │   │   │   └── main.yml
-    │   │   ├── files
-    │   │   ├── handlers
-    │   │   │   └── main.yml
-    │   │   ├── meta
-    │   │   │   └── main.yml
-    │   │   ├── tasks
-    │   │   │   └── main.yml
-    │   │   ├── templates
-    │   │   ├── tests
-    │   │   │   ├── inventory
-    │   │   │   └── test.yml
-    │   │   └── vars
-    │   │       └── main.yml
-    │   ├── vsftpd_centos
-    │   │   ├── README.md
-    │   │   ├── defaults
-    │   │   │   └── main.yml
-    │   │   ├── files
-    │   │   ├── handlers
-    │   │   │   └── main.yml
-    │   │   ├── meta
-    │   │   │   └── main.yml
-    │   │   ├── tasks
-    │   │   │   └── main.yml
-    │   │   ├── templates
-    │   │   ├── tests
-    │   │   │   ├── inventory
-    │   │   │   └── test.yml
-    │   │   └── vars
-    │   │       └── main.yml
-    │   └── vsftpd_ubuntu
-    │       ├── README.md
-    │       ├── defaults
-    │       │   └── main.yml
-    │       ├── files
-    │       ├── handlers
-    │       │   └── main.yml
-    │       ├── meta
-    │       │   └── main.yml
-    │       ├── tasks
-    │       │   └── main.yml
-    │       ├── templates
-    │       ├── tests
-    │       │   ├── inventory
-    │       │   └── test.yml
-    │       └── vars
-    │           └── main.yml
-    ├── vsftpd.conf
-    └── vsftpd.yaml
-
-38 directories, 37 files
+sysad2-12021/1811401/quiz31
+ * [ansible.cfg](/root/sysad2-12021/1811401/quiz31/ansible.cfg)
+ * [roles](/root/sysad2-12021/1811401/quiz31/roles)
+   * [vsftpd_ubuntu](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu)
+     * [README.md](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/README.md)
+     * [defaults](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/defaults)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/defaults/main.yml)
+     * [files](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/files)
+     * [handlers](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/handlers)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/handlers/main.yml)
+     * [meta](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/meta)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/meta/main.yml)
+     * [tasks](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/tasks)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/tasks/main.yml)
+     * [templates](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/templates)
+     * [tests](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/tests)
+       * [inventory](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/tests/inventory)
+       * [test.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/tests/test.yml)
+     * [vars](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/vars)
+     * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_ubuntu/vars/main.yml)
+   * [vsftpd_centos](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos)
+     * [README.md](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/README.md)
+     * [defaults](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/defaults)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/defaults/main.yml)
+     * [files](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/files)
+     * [handlers](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/handlers)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/handlers/main.yml)
+     * [meta](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/meta)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/meta/main.yml)
+     * [tasks](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/tasks)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/tasks/main.yml)
+     * [templates](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/templates)
+     * [tests](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/tests)
+       * [inventory](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/tests/inventory)
+       * [test.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/tests/test.yml)
+     * [vars](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/vars)
+     * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/vsftpd_centos/vars/main.yml)
+   * [configure_centos](/root/sysad2-12021/1811401/quiz31/roles/configure_centos)
+     * [README.md](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/README.md)
+     * [defaults](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/defaults)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/defaults/main.yml)
+     * [files](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/files)
+     * [handlers](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/handlers)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/handlers/main.yml)
+     * [meta](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/meta)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/meta/main.yml)
+     * [tasks](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/tasks)
+       * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/tasks/main.yml)
+     * [templates](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/templates)
+     * [tests](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/tests)
+       * [inventory](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/tests/inventory)
+       * [test.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/tests/test.yml)
+     * [vars](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/vars)
+     * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_centos/vars/main.yml)
+   * [configure_ubuntu](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu)
+   * [README.md](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/README.md)
+   * [defaults](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/defaults)
+     * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/defaults/main.yml)
+   * [files](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/files)
+   * [handlers](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/handlers)
+     * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/handlers/main.yml)
+   * [meta](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/meta)
+     * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/meta/main.yml)
+   * [tasks](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/tasks)
+     * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/tasks/main.yml)
+   * [templates](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/templates)
+   * [tests](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/tests)
+     * [inventory](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/tests/inventory)
+     * [test.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/tests/test.yml)
+   * [vars](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/vars)
+   * [main.yml](/root/sysad2-12021/1811401/quiz31/roles/configure_ubuntu/vars/main.yml)
+ * [inventory](/root/sysad2-12021/1811401/quiz31/inventory)
+ * [vsftpd.conf](/root/sysad2-12021/1811401/quiz31/vsftpd.conf)
+ * [vsftpd.yaml](/root/sysad2-12021/1811401/quiz31/vsftpd.yaml)
+ * [README.md](/root/sysad2-12021/1811401/quiz31/README.md)
