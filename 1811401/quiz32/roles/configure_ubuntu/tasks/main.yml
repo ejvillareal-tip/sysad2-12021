@@ -1,0 +1,51 @@
+---
+# tasks file for roles/configure_ubuntu
+
+- name: Stop firewall
+  service:
+    name: ufw
+    state: stopped
+    enabled: no
+
+- name: Start apache
+  service:
+    name: apache2
+    state: started
+    enabled: yes
+
+- name: Create folder for new website in /var/www
+  file:
+    path: /var/www/ervie-site/
+    state: directory
+    owner: erviejohn
+    group: erviejohn
+    mode: '0755'
+
+- name: Copy index.html to /var/ww/ervie-site/
+  copy:
+    src: index.html
+    dest: /var/www/ervie-site/index.html 
+    owner: erviejohn
+    group: erviejohn
+    mode: '0755'
+  register: httpd_index
+
+- name: Copy 000-deafult.conf to ervie-site.conf
+  copy:    
+    src: ervie-site.conf
+    dest: /etc/apache2/sites-available/ervie-site.conf
+    owner: erviejohn
+    group: erviejohn
+    mode: '0755'
+  register: ervie_config
+
+- name: Activate virtual hosts config file
+  shell: "a2ensite ervie-site.conf && a2dissite 000-default.conf"
+  when: ervie_config.changed
+
+- name: Reload httpd/apache service
+  service:
+    name: apache2
+    state: restarted
+    enabled: yes
+  when: httpd_index.changed

@@ -1,0 +1,15 @@
+---
+
+- name: Install and Configure httpd/apache on ubuntu
+  hosts: ubuntu
+
+  roles:
+    - httpd_ubuntu
+    - configure_ubuntu
+
+- name: Install and Configure httpd/apache on centos
+  hosts: centos
+
+  roles:
+    - httpd_centos
+    - configure_centos

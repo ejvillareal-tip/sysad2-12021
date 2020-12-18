@@ -1,0 +1,83 @@
+---
+# tasks file for roles/configure_centos
+
+- name: Stop firewall
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Start Httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: Create website folder
+  file: 
+    path: "/var/www/ervie-centos"
+    state: directory
+    owner: erviejohn
+    group: erviejohn
+    mode: '0755'
+
+- name: Create folder for new website in /var/www/ervie-centos
+  file:
+    path: "/var/www/ervie-centos/{{ item }}"
+    state: directory
+    owner: erviejohn
+    group: erviejohn
+    mode: '0755'
+  with_items: ["html", "log"]
+
+- name: Copy index.html to /var/www/ervie-centos/
+  copy:
+    src: index.html
+    dest: /var/www/ervie-centos/html/index.html
+    owner: erviejohn
+    group: erviejohn
+    mode: '0755'
+  register: httpd_index
+
+- name: Create directory sites-available and sites-enabled
+  file:
+    path: "/etc/httpd/{{ item }}"
+    state: directory
+  with_items: ["sites-enabled", "sites-available"]
+
+- name: add IncludeOptional sites-enabled/*.conf in httpd.conf
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    insertafter: 'IncludeOptional conf.d/*.conf'
+    line: IncludeOptional sites-enabled/*.conf
+  register: httpd_config
+
+- name: Copy ervie-centos.conf file 
+  copy:
+    src: ervie-centos.conf
+    dest: "/etc/httpd/{{ item }}/"
+  with_items: ["sites-enabled", "sites-available"]
+  register: config_file
+
+- name: Set a universal Apache policy
+  seboolean:
+    name: httpd_unified
+    state: yes
+    persistent: yes
+
+- name: Allow apache to generate and appent to web application log files
+  sefcontext:
+    target: "/var/www/ervie-centos/log(/.*)?"
+    setype: httpd_log_t
+    state: present
+  register: httpd_log
+
+- name: Apply changes on reboot
+  shell: restorecon -R -v /var/www/ervie-centos/log
+  when: httpd_log.changed
+
+- name: Restart httpd
+  service:
+    name: httpd
+    state: restarted
+  when: httpd_index.changed or httpd_config.changed or config_file.changed    
