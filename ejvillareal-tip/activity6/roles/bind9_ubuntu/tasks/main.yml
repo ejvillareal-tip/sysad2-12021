@@ -1,0 +1,8 @@
+---
+# tasks file for roles/bind9_ubuntu
+
+- name: Installing bind9 on ubuntu
+  apt:
+    name: bind9
+    state: latest
+    update_cache: yes

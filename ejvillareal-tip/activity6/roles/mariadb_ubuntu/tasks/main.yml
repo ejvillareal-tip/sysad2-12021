@@ -1,0 +1,9 @@
+---
+# tasks file for roles/mariadb_ubuntu
+
+- name: Installing mariadb on ubuntu
+  apt:
+    name: mariadb-server
+    state: latest
+    update_cache: yes
+

@@ -1,0 +1,8 @@
+---
+# tasks file for roles/bind9_centos
+
+- name: Installing bind9 on centos
+  yum:
+    name: bind-utils
+    state: latest
+    update_cache: yes

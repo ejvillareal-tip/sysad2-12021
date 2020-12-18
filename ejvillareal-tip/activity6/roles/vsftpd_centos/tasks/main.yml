@@ -1,0 +1,8 @@
+---
+# tasks file for roles/vsftpd_centos
+
+- name: Installing vsftpd on centos
+  yum: 
+    name: vsftpd
+    state: latest
+    update_cache: yes
