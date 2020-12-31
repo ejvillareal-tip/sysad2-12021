@@ -1,0 +1,94 @@
+---
+
+- name: Install Prerequisites of ELK
+  hosts: servers
+  tasks:
+    - name: Install nginx on Ubutu
+      apt:
+        name: nginx
+        state: present
+        update_cache: yes
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install default-jre/jdk on Ubuntu
+      apt:
+        name: default-jre
+        state: present
+        update_cache: yes
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install Java on CentOS
+      yum:
+        name: java-1.8.0-openjdk
+        state: latest
+        update_cache: yes
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install ELK (Elasticsearch, Logstash, Kibana)
+  hosts: ELKservers
+  tasks: 
+    - name: Install Elasticsearch on Ubuntu
+      include_role:
+        name: ubuntu-Elasticsearch
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+   
+    - name: Install Kibana on Ubuntu
+      include_role:
+        name: ubuntu-Kibana
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+    
+    - name: Install Logstash on Ubuntu
+      include_role:
+        name: ubuntu-Logstash
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+   
+    - name: Install Elasticsearch on CentOS
+      include_role:
+        name: centos-Elasticsearch
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+      
+    - name: Install Kibana on CentOS
+      include_role:
+        name: centos-Kibana
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+    - name: Install Logstash on CentOS
+      include_role:
+        name: centos-Logstash
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install Nagious
+  hosts: nagiosservers
+  tasks:
+    - name: Install on Ubuntu
+      include_role: 
+        name: ubuntu-nagios
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install on CentOS
+      include_role: 
+        name: centos-nagios
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: Install Grafana + Prometheus
+  hosts: gpserver
+  tasks:
+    - name: Install grafana on Ubuntu
+      include_role:
+        name: ubuntu-grafana
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+       
+    - name: Install prometheus on Ubuntu
+      include_role:
+        name: ubuntu-prometheus
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install grafana on CentOS
+      include_role:
+        name: centos-grafana
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+    - name: Install prometheus on CentOS
+      include_role:
+        name: centos-prometheus
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'

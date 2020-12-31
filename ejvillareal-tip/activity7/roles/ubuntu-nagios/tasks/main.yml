@@ -1,0 +1,184 @@
+---
+# tasks file for roles/ubuntu-nagios
+
+- name: Install nagios requirements
+  apt:
+    name: 
+      - build-essential 
+      - apache2 
+      - php 
+      - openssl 
+      - perl 
+      - make
+      - php-gd 
+      - libgd-dev 
+      - libapache2-mod-php 
+      - libperl-dev 
+      - libssl-dev 
+      - daemon
+      - wget 
+      - apache2-utils 
+      - unzip
+    state: present
+    update_cache: yes
+
+#- name: Create group
+#  group:
+#    name: nagios-group
+#    state: present
+
+#- name: Create user with group
+#  user: 
+#    name: nagios-ervie
+#    comment: New user for nagios
+#    group: nagios-group
+#    append: yes
+
+#- name: add www-data to nagios-group 
+#  user: 
+#    name: www-data
+#    group: nagios-group
+#    append: yes
+
+- name: Download Nagios from official website
+  get_url:
+    url: https://github.com/NagiosEnterprises/nagioscore/releases/download/nagios-4.4.6/nagios-4.4.6.tar.gz 
+    dest: /tmp/nagios-4.4.6.tar.gz
+
+- name: Extract the files
+  unarchive:
+    src: /tmp/nagios-4.4.6.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  register: extract_nagios
+
+- name: Compile nagios
+  shell: 
+    chdir: /tmp/nagios-4.4.6/
+    cmd: "./configure --with-httpd_conf=/etc/apache2/sites-enabled/"
+  when: extract_nagios.changed
+
+- name: re compile all 
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: all
+  when: extract_nagios.changed
+
+- name: install-groups-users in /tmp/nagios-4.4.6/ file
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-groups-users
+  when: extract_nagios.changed  
+ 
+- name: Create user with group
+  user: 
+    name: nagios-ervie
+    comment: New user for nagios
+    group: www-data
+    append: yes
+
+- name: run install 
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install
+  when: extract_nagios.changed
+
+- name: install-daemoninit in /tmp/nagios-4.4.6 file
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-daemoninit
+  when: extract_nagios.changed
+
+- name: install-commandmode in /tmp/nagios-4.4.6 file
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-commandmode
+  when: extract_nagios.changed
+
+- name: install-config in /tmp/nagios-4.4.6 file
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-config  
+  when: extract_nagios.changed
+
+#- name: Update email address
+#  lineinfile:
+#    path: /usr/local/nagios/etc/objects/contacts.cfg
+#    regexp: '^email'
+#    line: 'email	erviejohn.villareal79@gmail.com'
+
+- name: Fire up the web insterface installer
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-webconf
+  when: extract_nagios.changed
+
+- name: Install latest passlib with pip
+  pip: 
+    name: passlib
+
+- name: Create htpasswd file
+  htpasswd:
+    path: /usr/local/nagios/etc/htpasswd.users
+    name: ervie-admin
+    password: erviejohn20
+#    crypt_scheme: md5_crypt
+
+- name: Enable apache2 cgi
+  apache2_module:
+    state: present
+    name: cgi 
+
+- name: Restart apache2
+  systemd:
+    name: apache2
+    state: restarted
+  when: extract_nagios.changed
+
+- name: install-exfoliation
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-exfoliation  
+  when: extract_nagios.changed
+
+- name: install-classicui
+  make:
+    chdir: /tmp/nagios-4.4.6/
+    target: install-classicui
+  when: extract_nagios.changed
+
+- name: Download nagios plugins
+  get_url:
+    url: https://github.com/nagios-plugins/nagios-plugins/releases/download/release-2.3.3/nagios-plugins-2.3.3.tar.gz
+    dest: /tmp/
+  register: download_plugins
+
+- name: Extract the nagios plugins
+  unarchive:
+    src: /tmp/nagios-plugins-2.3.3.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: download_plugins.changed
+
+- name: Compile nagios plugins
+  shell: 
+    chdir: /tmp/nagios-plugins-2.3.3
+    cmd: "./configure" 
+  when: download_plugins.changed
+ 
+- name: build the default nagios plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.3.3/
+  when: download_plugins.changed
+
+- name: install in nagios plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.3.3/
+    target: install
+  when: download_plugins.changed
+
+- name: Start Nagios service
+  systemd:
+    name: nagios
+    state: started
+    enabled: yes

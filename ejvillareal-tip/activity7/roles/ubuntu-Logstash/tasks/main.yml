@@ -1,0 +1,27 @@
+---
+# tasks file for roles/ubuntu-Logstash
+
+- name: Install Logstash
+  apt: 
+    name: logstash
+    state: present
+    update_cache: yes
+
+- name: Copy 02-beats-input.conf config file
+  copy:
+    src: config_files/02-beats-input.conf
+    dest: /etc/logstash/conf.d/02-beats-input.conf
+
+- name: Copy 30-elasticsearch-output.conf config file
+  copy:
+    src: config_files/30-elasticsearch-output.conf
+    dest: /etc/logstash/conf.d/30-elasticsearch-output.conf
+
+- name: Test logstash if up
+  shell: "-u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t"
+
+- name: Start and enable Logstash
+  service:
+    name: logstash
+    state: started
+    enabled: yes
