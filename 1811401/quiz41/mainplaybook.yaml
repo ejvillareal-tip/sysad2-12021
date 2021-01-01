@@ -1,0 +1,13 @@
+---
+
+- name: Install and Configure Nagios Core on Ubuntu
+  hosts: ubuntu
+  roles:
+    - ubuntu-installnagios
+    - ubuntu-confignagios
+
+- name: Install and Configure Nagios Core on Centos
+  hosts: centos
+  roles:
+    - centos-installnagios
+    - centos-confignagios

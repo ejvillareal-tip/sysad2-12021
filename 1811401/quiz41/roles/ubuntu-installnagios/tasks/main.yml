@@ -1,0 +1,23 @@
+---
+# tasks file for roles/ubuntu-installnagios
+
+- name: Update and Upgrade apt packages
+  apt:
+    update_cache: yes
+    upgrade: 'yes'
+
+- name: Install Prerequisite of Nagios Core
+  apt:
+    name:
+      - autoconf
+      - gcc
+      - libc6
+      - make
+      - wget
+      - unzip
+      - apache2
+      - php
+      - libapache2-mod-php
+      - libgd-dev
+    state: latest
+    update_cache: yes

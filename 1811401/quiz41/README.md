@@ -1,0 +1,90 @@
+# Install and Configure Nagios Core on Ubuntu and CentOS
+
+### Nagios Login Information
+
+##### Ubuntu
+Username: ubuntu-admin-ervs
+Password: ervieadmin
+
+##### CentOS
+Username: centos-admin-ervs
+Password: ervieadmin
+
+
+### Directory Structure
+
+sysad2-12021/1811401/quiz41/
+
+ * [inventory](./inventory)
+ * [roles](./roles)
+   * [ubuntu-installnagios](./roles/ubuntu-installnagios)
+     * [README.md](./roles/ubuntu-installnagios/README.md)
+     * [defaults](./roles/ubuntu-installnagios/defaults)
+       * [main.yml](./roles/ubuntu-installnagios/defaults/main.yml)
+     * [files](./roles/ubuntu-installnagios/files)
+     * [handlers](./roles/ubuntu-installnagios/handlers)
+       * [main.yml](./roles/ubuntu-installnagios/handlers/main.yml)
+     * [meta](./roles/ubuntu-installnagios/meta)
+       * [main.yml](./roles/ubuntu-installnagios/meta/main.yml)
+     * [tasks](./roles/ubuntu-installnagios/tasks)
+       * [main.yml](./roles/ubuntu-installnagios/tasks/main.yml)
+     * [templates](./roles/ubuntu-installnagios/templates)
+     * [tests](./roles/ubuntu-installnagios/tests)
+       * [inventory](./roles/ubuntu-installnagios/tests/inventory)
+       * [test.yml](./roles/ubuntu-installnagios/tests/test.yml)
+     * [vars](./roles/ubuntu-installnagios/vars)
+     * [main.yml](./roles/ubuntu-installnagios/vars/main.yml)
+   * [ubuntu-confignagios](./roles/ubuntu-confignagios)
+     * [README.md](./roles/ubuntu-confignagios/README.md)
+     * [defaults](./roles/ubuntu-confignagios/defaults)
+       * [main.yml](./roles/ubuntu-confignagios/defaults/main.yml)
+     * [files](./roles/ubuntu-confignagios/files)
+     * [handlers](./roles/ubuntu-confignagios/handlers)
+       * [main.yml](./roles/ubuntu-confignagios/handlers/main.yml)
+     * [meta](./roles/ubuntu-confignagios/meta)
+       * [main.yml](./roles/ubuntu-confignagios/meta/main.yml)
+     * [tasks](./roles/ubuntu-confignagios/tasks)
+       * [main.yml](./roles/ubuntu-confignagios/tasks/main.yml)
+     * [templates](./roles/ubuntu-confignagios/templates)
+     * [tests](./roles/ubuntu-confignagios/tests)
+       * [inventory](./roles/ubuntu-confignagios/tests/inventory)
+       * [test.yml](./roles/ubuntu-confignagios/tests/test.yml)
+     * [vars](./roles/ubuntu-confignagios/vars)
+     * [main.yml](./roles/ubuntu-confignagios/vars/main.yml)
+   * [centos-confignagios](./roles/centos-confignagios)
+     * [README.md](./roles/centos-confignagios/README.md)
+     * [defaults](./roles/centos-confignagios/defaults)
+       * [main.yml](./roles/centos-confignagios/defaults/main.yml)
+     * [files](./roles/centos-confignagios/files)
+     * [handlers](./roles/centos-confignagios/handlers)
+       * [main.yml](./roles/centos-confignagios/handlers/main.yml)
+     * [meta](./roles/centos-confignagios/meta)
+       * [main.yml](./roles/centos-confignagios/meta/main.yml)
+     * [tasks](./roles/centos-confignagios/tasks)
+       * [main.yml](./roles/centos-confignagios/tasks/main.yml)
+     * [templates](./roles/centos-confignagios/templates)
+     * [tests](./roles/centos-confignagios/tests)
+       * [inventory](./roles/centos-confignagios/tests/inventory)
+       * [test.yml](./roles/centos-confignagios/tests/test.yml)
+     * [vars](./roles/centos-confignagios/vars)
+     * [main.yml](./roles/centos-confignagios/vars/main.yml)
+   * [centos-installnagios](./roles/centos-installnagios)
+   * [README.md](./roles/centos-installnagios/README.md)
+   * [defaults](./roles/centos-installnagios/defaults)
+     * [main.yml](./roles/centos-installnagios/defaults/main.yml)
+   * [files](./roles/centos-installnagios/files)
+   * [handlers](./roles/centos-installnagios/handlers)
+     * [main.yml](./roles/centos-installnagios/handlers/main.yml)
+   * [meta](./roles/centos-installnagios/meta)
+     * [main.yml](./roles/centos-installnagios/meta/main.yml)
+   * [tasks](./roles/centos-installnagios/tasks)
+     * [main.yml](./roles/centos-installnagios/tasks/main.yml)
+   * [templates](./roles/centos-installnagios/templates)
+   * [tests](./roles/centos-installnagios/tests)
+     * [inventory](./roles/centos-installnagios/tests/inventory)
+     * [test.yml](./roles/centos-installnagios/tests/test.yml)
+   * [vars](./roles/centos-installnagios/vars)
+   * [main.yml](./roles/centos-installnagios/vars/main.yml)
+ * [ansible.cfg](./ansible.cfg)
+ * [mainplaybook.yaml](./mainplaybook.yaml)
+ * [README.md](./README.md)

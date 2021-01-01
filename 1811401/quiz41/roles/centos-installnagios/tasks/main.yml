@@ -1,0 +1,15 @@
+---
+# tasks file for roles/centos-installnagios
+
+- name: Install Nagios Core Prerequisite with dnf
+  dnf:
+    name:
+      - gcc
+      - glibc
+      - glibc-common
+      - perl
+      - httpd
+      - php
+      - wget
+      - gd
+      - gd-devel
