@@ -61,31 +61,21 @@
     owner: ubuntu-prome
     group: ubuntu-prome
 
-- name: Check if /etc/prometheus/consoles file exists
-  stat:
-    path: /etc/prometheus/consoles
-  register: stat_con
-
-- name: Set /etc/prometheus/consoles ownership to ubuntu-prome user
-  file:
-    path: /etc/prometheus/consoles
-    state: touch
+- name: Copy consoles from /tmp/prometheus-2.0.0.linux-amd64
+  copy:
+    src: /tmp/prometheus-2.0.0.linux-amd64/consoles
+    dest: /etc/prometheus/consoles
+    remote_src: yes
     owner: ubuntu-prome
     group: ubuntu-prome
-  when: stat_con.stat.exists == False
 
-- name: Check if /etc/prometheus/consoles file exists
-  stat:
-    path: /etc/prometheus/consoles
-  register: stat_con_lib
-
-- name: Set /etc/prometheus/console_libraries ownership to ubuntu-prome user
-  file:
-    path: /etc/prometheus/console_libraries
-    state: touch
+- name: Copy console_libraries from /tmp/prometheus-2.0.0.linux-amd64
+  copy:
+    src: /tmp/prometheus-2.0.0.linux-amd64/console_libraries
+    dest: /etc/prometheus/console_libraries
+    remote_src: yes
     owner: ubuntu-prome
     group: ubuntu-prome
-  when: stat_con_lib.stat.exists == False
 
 - name: Copy ubuntu-prometheus.yml to /etc/prometheus/prometheus.yml
   copy:
