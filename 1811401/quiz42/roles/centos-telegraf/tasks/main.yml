@@ -1,0 +1,18 @@
+---
+# tasks file for roles/centos-telegraf
+
+- name: Copy influxdb.repo
+  copy:
+    src: config_files/centos-influxdb.repo
+    dest: /etc/yum.repos.d/influxdb.repo
+
+- name: install telegram using dnf
+  dnf:
+    name: telegraf
+    state: present
+
+- name: Start and Enabled telegraf
+  systemd:
+    name: telegraf
+    state: started
+    enabled: yes

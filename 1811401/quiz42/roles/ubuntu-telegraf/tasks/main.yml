@@ -1,0 +1,66 @@
+---
+# tasks file for roles/ubuntu-telegraf
+
+- name: Get InfluxData repo using apt-key
+  apt_key:
+    url: https://repos.influxdata.com/influxdb.key
+    state: present
+  register: get_influxdata
+
+- name: Load any function into this path /etc/lsb-release
+  shell: source /etc/lsb-release  && echo "deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | sudo tee /etc/apt/sources.list.d/influxdb.list
+  args:
+    executable: /bin/bash
+  when: get_influxdata.changed
+
+#- name: Add repo in /etc/apt/sources.list.d/influxdb.list
+#  copy:
+#    dest: /etc/apt/sources.list.d/influxdb.list
+#    content: deb https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable
+
+- name: Install influxdb with apt
+  apt:
+    name: influxdb
+    state: present
+    update_cache: yes
+
+- name: Install influxdb with pip
+  pip:
+    name: influxdb
+
+- name: Start and enable telegraf
+  systemd:
+    name: influxdb
+    state: started
+    enabled: yes
+
+- name: Create database
+  influxdb_database:
+      hostname: "ubuntu-1811401"
+      username: "ubuntu-ervie"
+      password: "erviejohn"
+      database_name: "ubuntu-telegrafdb"
+      state: present
+
+- name: Install telegraf with apt
+  apt:
+    name: telegraf
+    state: present
+    update_cache: yes
+  register: install_telegraf
+
+- name: Create backup file of telegraf.conf
+  command: mv /etc/telegraf/telegraf.conf /etc/telegraf/telegraf.conf.default
+  when: install_telegraf.changed
+
+- name: Copy telegraf.conf file
+  copy:
+    src: config_files/telegraf.conf
+    dest: /etc/telegraf/telegraf.conf
+  when: install_telegraf.changed
+    
+- name: Start and enable telegraf
+  systemd:
+    name: telegraf
+    state: started
+    enabled: yes
