@@ -1,0 +1,16 @@
+---
+# tasks file for roles/ubuntu-Mariadb
+
+- name: Install MariaDb using apt
+  apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+    state: present
+    update_cache: yes
+
+- name: Start and Enable mariadb
+  systemd:
+    name: mariadb
+    state: started
+    enabled: yes

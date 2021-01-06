@@ -1,0 +1,134 @@
+---
+
+# Stop firewall
+- name: Stop firewall service on ubuntu and centos
+  hosts: all
+  tasks:
+    - name: Stop ufw on ubuntu
+      service:
+        name: ufw
+        state: stopped
+        enabled: no
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Stop firewalld on centos
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Install Nagios
+- hosts: nagios
+  tasks:
+    - name: Install and Configure Nagios on Ubuntu
+      include_role:
+        name: ubuntu-Nagios
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+ 
+    - name: Install and Configure Nagios on CentOS
+      include_role:
+        name: centos-Nagios
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Install Grafana
+- hosts: grafana
+  tasks:
+    - name: Install and Configure Grafana on Ubuntu
+      include_role:
+        name: ubuntu-Grafana
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+ 
+    - name: Install and Configure Grafana on CentOS
+      include_role:
+        name: centos-Grafana
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Install Prometheus
+- hosts: prometheus
+  tasks:
+    - name: Install and Configure Prometheus on Ubuntu
+      include_role:
+        name: ubuntu-Prometheus
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+ 
+    - name: Install and Configure Prometheus on CentOS
+      include_role:
+        name: centos-Prometheus
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Install Influxdb
+- hosts: influxdb
+  tasks:
+    - name: Install and Configure InfluxDB on Ubuntu
+      include_role:
+        name: ubuntu-Influxdb
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+ 
+    - name: Install and Configure InfluxDB on CentOS
+      include_role:
+        name: centos-Influxdb
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Install Httpd and PHP
+- hosts: httpd_php
+  tasks:
+    - name: Install Apache2 and PHP on Ubuntu
+      include_role:
+        name: ubuntu-Apache2_php
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install Httpd and PHP on CentOS
+      include_role:
+        name: centos-Httpd_php
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Install Mariadb
+- hosts: mariadb
+  tasks:
+    - name: Install MariaDB on Ubuntu
+      include_role:
+        name: ubuntu-Mariadb
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install MariaDB on CentOS
+      include_role:
+        name: centos-Mariadb
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+# Install and Configure Elastic Stack (Elasticsearch, Kibana and Logstash) on Ubuntu and CentOS
+- hosts: elasticsearch
+  tasks:
+    - name: Install and Configure Elasticsearch on Ubuntu
+      include_role:  
+        name: ubuntu-Elasticsearch
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install and Configure Elasticsearch on CentOS
+      include_role:
+        name: centos-Elasticsearch
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+
+- hosts: kibana
+  tasks:
+    - name: Install and Configure Kibana on Ubuntu
+      include_role:  
+        name: ubuntu-Kibana
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install and Configure Kibana on CentOS
+      include_role:
+        name: centos-Kibana
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
+ 
+- hosts: logstash
+  tasks:
+    - name: Install and Configure Logstash on Ubuntu
+      include_role:  
+        name: ubuntu-Logstash
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Install and Configure Logstash on CentOS
+      include_role:
+        name: centos-Logstash
+      when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'

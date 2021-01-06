@@ -1,0 +1,74 @@
+---
+# tasks file for roles/ubuntu-Elasticsearch
+
+- name: Install Prerequisite of ELK
+  apt:
+    name: 
+      - nginx
+      - openjdk-8-jdk
+    state: present
+    update_cache: yes
+
+### Installing Elasticsearch
+- name: Import the Elasticsearch public GPG key into APT
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+- name: Add the Elastic source list to the sources.list.d directory
+  copy:
+    content: "deb https://artifacts.elastic.co/packages/7.x/apt stable main"
+    dest: /etc/apt/sources.list.d/elastic-7.x.list
+
+- name: Install elasticsearch
+  apt:
+    name: elasticsearch
+    state: present
+    update_cache: yes
+
+
+- name: Replace localhost in elasticsearch.yml
+  replace:
+    path: /etc/elasticsearch/elasticsearch.yml
+    regexp: '.network.host(.*)$'
+    replace: 'network.host: localhost'
+#    backrefs: yes
+#  register: elasticsearch_yml
+
+# Uncommet line 32 - 37 if you encounter error about time out exceed and comment line 62
+
+#- name: Create a directory for time error
+#  file: 
+#    path: /etc/systemd/system/elasticsearch.service.d
+#    state: directory  
+
+#- name: Change start time of elasticsearch service to solve error
+#  copy:
+#    content: |
+#      [Service]
+#      TimeoutStartSec=180
+#    dest: /etc/systemd/system/elasticsearch.service.d/startup-timeout
+#  register: time_error
+
+#- name: reload systemd manager configuration
+#  systemd: daemon-reload=yes
+#  when: time_error.changed
+
+- name: Start Elasticsearch Service
+  systemd:
+    state: started
+    name: elasticsearch
+    enabled: yes
+  ignore_errors: yes
+
+#- name: Restart Elasticsearch Service
+#  service:
+#    name: elasticsearch
+#    state: restarted
+#    enabled: yes
+#  when: elasticsearch_yml.changed
+
+#- name: Check elasticsearch is running
+#  uri:
+#    url: http://localhost:9200/
+#    method: GET

@@ -1,0 +1,147 @@
+---
+# tasks file for roles/centos-Nagios
+
+- name: Install Nagios Core Prerequisite with dnf
+  dnf:
+    name:
+      - gcc
+      - glibc
+      - glibc-common
+      - perl
+      - httpd
+      - php
+      - wget
+      - gd
+      - gd-devel
+
+- name: Start and anable httpd.service
+  systemd:
+    name: httpd.service
+    state: started
+    enabled: yes
+
+- name: Download nagios-4.4.6.tar.gz
+  get_url:
+    url: https://github.com/NagiosEnterprises/nagioscore/archive/nagios-4.4.6.tar.gz
+    dest: /tmp/nagios-4.4.6.tar.gz
+
+- name: Unarchive nagios-4.4.6.tar.gz
+  unarchive:
+    src: /tmp/nagios-4.4.6.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  register: unarchive_nagios
+
+- name: Configure the Nagios Core
+  shell:
+    chdir: /tmp/nagioscore-nagios-4.4.6/
+    cmd: "./configure"
+  when: unarchive_nagios.changed
+
+- name: Compile Nagios main program and CGIs
+  make:
+    chdir: /tmp/nagioscore-nagios-4.4.6/
+    target: all
+  when: unarchive_nagios.changed
+
+- name: Create the required OS users and groups
+  make:
+    chdir: /tmp/nagioscore-nagios-4.4.6/
+    target: install-groups-users
+  when: unarchive_nagios.changed
+
+- name: Create nagios user with apache group
+  user:
+    name: centos-nagios-ervs
+    comment: "New user for nagios"
+    group: apache
+
+- name: Install the already compiled Nagios Core binaries
+  make:
+    chdir: /tmp/nagioscore-nagios-4.4.6/
+    target: install
+  when: unarchive_nagios.changed
+
+- name: Configure Nagios Core command mode
+  make:
+    chdir: /tmp/nagioscore-nagios-4.4.6/
+    target: install-commandmode
+  when: unarchive_nagios.changed
+
+- name: Install the Nagios sample configuration file
+  make:
+    chdir: /tmp/nagioscore-nagios-4.4.6/
+    target: install-config
+  when: unarchive_nagios.changed
+
+- name: Install the Apache configuration file to configure the Nagios web interface
+  make:
+    chdir: /tmp/nagioscore-nagios-4.4.6/
+    target: install-webconf
+  when: unarchive_nagios.changed
+
+- name: Create an Admin user and add it to htaccess password file
+  htpasswd:
+    path: /usr/local/nagios/etc/htpasswd.users
+    name: centos-admin-ervs
+    password: ervieadmin
+#    crypt_scheme: md5_cryptic
+
+- name: Download Nagios Plugins
+  get_url:
+    url: https://nagios-plugins.org/download/nagios-plugins-2.2.1.tar.gz
+    dest: /tmp/nagios-plugins-2.2.1.tar.gz
+  register: download_plugins
+
+- name: Extract the nagios plugins
+  unarchive:
+    src: /tmp/nagios-plugins-2.2.1.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: download_plugins.changed
+
+- name: Compile nagios plugins
+  shell:
+    chdir: /tmp/nagios-plugins-2.2.1
+    cmd: "./configure"
+  when: download_plugins.changed
+
+- name: build the default nagios plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.2.1/
+  when: download_plugins.changed
+
+- name: install in nagios plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.2.1/
+    target: install
+  when: download_plugins.changed
+
+- name: Reload system service
+  systemd:
+    daemon-reload: yes
+
+- name: Allow the Apache web service in CentOS 8 firewall
+  firewalld:
+    service: http
+    permanent: yes
+    state: enabled
+  register: allow_http
+
+- name: Reload firewalld
+  systemd:
+    name: firewalld
+    state: reloaded
+  when: allow_http.changed
+
+- name: Start httpd.service
+  systemd:
+    name: httpd.service
+    state: started
+    enabled: yes
+
+- name: Start nagios.service
+  systemd:
+    name: nagios.service
+    state: started
+    enabled: yes
