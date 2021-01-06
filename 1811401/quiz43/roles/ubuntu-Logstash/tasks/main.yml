@@ -19,8 +19,8 @@
     src: config_files/30-elasticsearch-output.conf
     dest: /etc/logstash/conf.d/30-elasticsearch-output.conf
 
-- name: Test logstash if up
-  shell: "-u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t"
+#- name: Test logstash if up
+#  shell: "-u logstash /usr/share/logstash/bin/logstash --path.settings /etc/logstash -t"
 
 - name: Start and enable Logstash
   service:
