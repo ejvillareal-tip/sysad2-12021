@@ -1,0 +1,47 @@
+---
+# tasks file for roles/ubuntu-Kibana
+
+# Installing Kibana
+- name: Install Kibana
+  apt:
+    name: kibana
+    state: present
+    update_cache: yes
+
+- name: Start and Enable Kibana
+  service:
+    name: kibana
+    state: started
+    enabled: yes
+
+- name: Create administrative Kibana user
+  copy:
+    content: "ervieadmin:`openssl passwd -apr1`"
+    dest: /etc/nginx/htpasswd.users
+
+- name: Create Nginx server block file
+  copy:
+    src: config_files/ervie_domain
+    dest: /etc/nginx/sites-available/ervie_domain
+
+- name: Create symbolic link to sites-enabled
+  file:
+    src: /etc/nginx/sites-available/ervie_domain
+    dest: /etc/nginx/sites-enabled/ervie_domain    
+    state: link
+  register: symbolic_link
+
+- name: Check the configuration for syntax errors
+  shell: "nginx -t"
+  when: symbolic_link.changed
+
+- name: Reload Nginx service
+  systemd:
+    name: nginx
+    state: reloaded
+  when: symbolic_link.changed
+
+- name: allow Nginx Full in ufw
+  ufw:
+    rule: allow
+    name: 'Nginx Full'
