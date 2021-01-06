@@ -1,0 +1,45 @@
+---
+# tasks file for roles/centos-Kibana
+
+- name: Install Kibana using dnf
+  dnf:
+    name: kibana
+    state: present
+
+- name: Configure server.port in /etc/kibana/kibana.yml
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    regexp: '#server.port$'
+    line: 'server.port: 5601'
+
+- name: Configure server.host in /etc/kibana/kibana.yml
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    regexp: '#server.host$'
+    line: 'server.host: localhost'
+
+- name: Configure elasticsearch.hosts in /etc/kibana/kibana.yml
+  lineinfile:
+    path: /etc/kibana/kibana.yml
+    regexp: '#elasticsearch.hosts$'
+    line: 'elasticsearch.hosts: [http://localhost:9200]'
+
+- name: Start Kibana
+  systemd:
+    state: started
+    name: kibana
+    enabled: yes
+
+- name: Allow traffic on port 5601
+  firewalld:
+    port: 5601/tcp
+    permanent: true
+    state: enabled
+  register: allowed_port
+
+- name: Reload firewalld service
+  systemd:
+    state: restarted
+    daemon_reload: yes
+    name: firewalld
+  when: allowed_port.changed
