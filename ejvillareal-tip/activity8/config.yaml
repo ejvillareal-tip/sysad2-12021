@@ -1,0 +1,65 @@
+---
+
+# Build and Run DockerFile
+
+- name: :Install pip and docker-py
+  hosts: localhost
+  connection: local
+  tasks:
+  - name: Install pip
+    apt:
+      name: python3-pip
+      state: present
+      update_cache: yes
+    
+  - name: Install docker-py package
+    pip:
+      name: docker-py
+
+- name: Build and Run DockerFile
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Build web server Dockerfile
+      docker_image:
+        name: web-server
+        build:
+          path: DockerFiles/web_server/
+          pull: no
+        source: build
+        state: present
+      register: build_web
+
+    - name: Run the container
+      docker_container:
+        name: web-server
+        image: web-server:latest
+        privileged: yes
+        published_ports: 8080:80
+      when: build_web.changed
+
+    - name: Build db server Docker
+      docker_image:
+        name: db-server
+        build:
+          path: DockerFiles/db_server
+          pull: no
+        source: build
+        state: present
+      register: build_db
+
+    - name: Run the container
+      docker_container:
+        name: db-server
+        image: db-server:latest
+        privileged: yes
+        published_ports: 3306:3306
+      when: build_db.changed
+
+    - name: Restart docker
+      systemd:
+        name: docker
+        state: restarted
+      when: 
+        - build_web.changed 
+        - build_db.chaged
