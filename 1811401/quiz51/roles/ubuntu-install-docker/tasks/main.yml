@@ -1,0 +1,64 @@
+---
+# tasks file for roles/ubuntu-install-docker
+
+# Option 1 line 4 - 29
+- name: Install apt-transport-https ca-certificates curl software-properties-common
+  apt:
+    name:
+      - apt-transport-https 
+      - ca-certificates
+      - curl 
+      - software-properties-common
+    state: present
+    update_cache: yes
+
+- name: Adding Dockers GPG Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Installing the Docker Repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal  stable" 
+    state: present
+
+- name: Installing the Latest Docker
+  apt:
+    name: docker-ce
+    state: present
+    update_cache: yes
+
+# option 2 line (Uncomment 33 -37)
+#- name: Install docker.io
+#  apt:
+#    name: docker.io
+#    state: present
+#    update_cache: yes
+
+- name: Create the docker group
+  group:
+    name: docker
+    state: present
+
+- name: Add docker group to my user
+  user:
+    name: erviejohn
+    group: docker
+
+- name: Install python3-pip
+  apt:
+    name:
+      - python3
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: Install docker-py using pip
+  pip:
+    name: docker-py
+    
+- name: Start and Enable docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes

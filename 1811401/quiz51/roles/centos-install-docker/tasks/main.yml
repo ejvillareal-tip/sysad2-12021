@@ -1,0 +1,43 @@
+---
+# tasks file for roles/centos-install-docker
+
+- name: Download docker-ce.repo
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/
+    mode: '0755'
+
+- name: Install docker-ce
+  yum:
+    name: docker-ce
+    state: present
+    update_cache: yes
+
+- name: create docker group
+  group:
+    name: docker
+    state: present
+
+- name: Add docker group to user
+  user:
+    name: erviejohn
+    group: docker
+
+- name: Install python3-pip
+  yum:
+    name: 
+      - python3
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: Install docker-py using pip
+  pip:
+    name: docker-py
+
+- name: Start and Enable docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
