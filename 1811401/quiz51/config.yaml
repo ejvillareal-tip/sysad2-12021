@@ -3,7 +3,7 @@
 # Install Elastic Stack in a Containerize from on Ubuntu and Centos
 
 - name: Stop firewall service on ubuntu and centos
-  hosts: centos # change me
+  hosts: all
   tasks:
     - name: Stop ufw on ubuntu
       service:
