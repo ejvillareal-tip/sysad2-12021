@@ -19,10 +19,10 @@
         enabled: no
       when: ansible_distribution == 'CentOS' or ansible_distribution == 'Red Hat Enterprise Linux'
 
-#- name: Install docker on Ubuntu
-#  hosts: ubuntu
-#  roles: 
-#    - ubuntu-install-docker
+- name: Install docker on Ubuntu
+  hosts: ubuntu
+  roles: 
+    - ubuntu-install-docker
 
 - name: Install docker on Centos
   hosts: centos
