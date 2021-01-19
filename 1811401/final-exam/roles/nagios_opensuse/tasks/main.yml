@@ -1,0 +1,140 @@
+---
+# tasks file for roles/nagios_opensuse
+
+- name: Install Prerequisite of nagios
+  zypper:
+    name: 
+      - apache2 
+      - php7
+      - gcc 
+      - glibc  
+      - gd 
+      - wget 
+      - perl 
+      - make 
+      - apache2-mod_php7
+    state: present
+    update_cache: yes
+
+#- name: Enable php7
+#  apache2_module:
+#    state: present
+#    name: php7
+
+- name: Install python3 and python3-pip
+  zypper:
+    name: 
+      - python3
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: Install passlib for nagios login authentication
+  pip:
+    name: passlib
+
+- name: Add the nagios user
+  user:
+    name: opensuse-nagios-ervs
+    comment: New user for nagios
+
+- name: Add group for nagios
+  group:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - ngadmin
+    - opensuse-nagios-ervs
+    - nagcmd
+
+- name: Add the nagios user to nagcmd group
+  user:
+    name: "{{ item }}"
+    group: ngadmin
+    append: yes
+  loop:
+   - opensuse-nagios-ervs
+   - wwwrun
+
+- name: Download nagios-4.3.1.tar.gz
+  get_url:
+    url: http://prdownloads.sourceforge.net/sourceforge/nagios/nagios-4.3.1.tar.gz
+    dest: /tmp/nagios-4.3.1.tar.gz
+
+- name: Unarchive nagios-4.3.1.tar.gz
+  unarchive:
+    src: /tmp/nagios-4.3.1.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  register: unarchive_nagios
+
+- name: Configure Nagios Core to use Apache as the web server
+  shell:
+    chdir: /tmp/nagios-4.3.1
+    cmd: "./configure --with-nagios-group=opensuse-nagios-ervs --with-command-group=nagcmd"
+  when: unarchive_nagios.changed
+
+- name: Install Nagios in /tmp/nagios-4.3.1 using make
+  make:
+    chdir: /tmp/nagios-4.3.1
+    target: "{{ item }}"
+  loop: 
+    - all
+    - install
+    - install-init
+    - install-daemoninit
+#    - install-groups-users
+    - install-config
+    - install-commandmode
+    - install-webconf
+  when: unarchive_nagios.changed
+
+- name: Configure Nagios Core Web Interface basic authentication
+  htpasswd:
+    path: /usr/local/nagios/etc/htpasswd.users
+    name: ervie-admin-opensuse
+    password: ervieadmin
+  register: config_auth
+
+- name: Restart and Enable apache2
+  systemd:
+    name: apache2
+    state: restarted
+    enabled: yes
+  when: config_auth.changed
+
+- name: Download nagios plugins
+  get_url:
+    url: http://nagios-plugins.org/download/nagios-plugins-2.0.3.tar.gz
+    dest: /tmp/
+  register: download_plugins
+
+- name: Extract the nagios plugins
+  unarchive:
+    src: /tmp/nagios-plugins-2.0.3.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: download_plugins.changed  
+
+- name: Compile nagios plugins
+  shell: 
+    chdir: /tmp/nagios-plugins-2.0.3
+    cmd: "./configure" 
+  when: download_plugins.changed
+
+- name: build the default nagios plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.0.3/
+  when: download_plugins.changed
+
+- name: install in nagios plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.0.3/
+    target: install
+  when: download_plugins.changed
+
+- name: Enable and Start nagios
+  systemd:
+    name: nagios
+    state: started
+    enabled: yes

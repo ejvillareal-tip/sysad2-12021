@@ -1,0 +1,88 @@
+---
+
+# tasks for Final-Exam
+
+- name: Stop firewall service on all servers
+  hosts: all
+  tasks:
+    - name: Stop ufw on ubuntu
+      systemd:
+        name: ufw
+        state: stopped
+        enabled: no
+      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+    - name: Stop firewalld on CentOS and OpenSuse # same command
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no
+      when: ansible_distribution == 'CentOS' or ansible_os_family == 'Suse'
+
+- hosts: install_git
+  tasks:
+    - name: Install git on Debian
+      include_role:
+        name: install_git_debian
+      when: ansible_distribution == 'Debian'
+
+    - name: Install git on CentOS
+      include_role:
+        name: install_git_centos
+      when: ansible_distribution == 'CentOS'
+
+    - name: Install git on OpenSuse
+      include_role:
+        name: install_git_opensuse
+      when: ansible_os_family == 'Suse'
+
+# Clone your prelim exam repository
+- hosts: git_clone
+  tasks:
+    - name: Clone prelim-exam repository on Debian
+      include_role:
+        name: git_clone
+
+# Install and configure one enterprise service that can be installed in Debian,Centos and OpenSuse serversInstall and configure one enterprise service that can be installed in Debian,Centos and OpenSuse servers
+- hosts: enterprise_service
+  tasks:
+    - name: Install and Configure Apache2 on Debian
+      include_role:
+        name: apache2_debian
+      when: ansible_distribution == 'Debian'
+
+    - name: Install and Configure Httpd on CentOS
+      include_role:
+        name: httpd_centos
+      when: ansible_distribution == 'CentOS'
+
+    - name: Install and Configure Apache2 on OpenSuse
+      include_role:
+        name: apache2_opensuse
+      when: ansible_os_family == 'Suse'
+
+# Change Motd as "Ansible Managed by <username>"      
+- hosts: motd
+  tasks:
+    - name: Change Motd on Debian, CentOS, and OpenSuse
+      include_role:
+        name: motd      
+
+# Install and configure one monitoring tool that can be installed in Debian, Centos and OpenSuse servers (if it is a stack there should be option of different host)        
+- hosts: nagios
+  tasks:
+    - name: Install and Configure Nagios Core on Debian
+      include_role:
+        name: nagios_debian
+      when: ansible_distribution == 'Debian'
+
+    - name: Install and Configure Nagios Core on CentOS
+      include_role:
+        name: nagios_centos
+      when: ansible_distribution == 'CentOS'
+
+    - name: Install and Configure Nagios Core on OpenSuse
+      include_role:
+        name: nagios_opensuse
+      when: ansible_os_family == 'Suse'
+

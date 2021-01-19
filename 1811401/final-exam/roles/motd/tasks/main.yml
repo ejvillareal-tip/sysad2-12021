@@ -1,0 +1,8 @@
+---
+# tasks file for roles/motd
+
+- name: Change Motd
+  copy:
+    dest: /etc/motd
+    content: |
+      Ansible Managed by ejvillareal-tip  

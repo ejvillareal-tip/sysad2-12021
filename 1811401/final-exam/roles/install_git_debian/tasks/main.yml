@@ -1,0 +1,8 @@
+---
+# tasks file for roles/git_debian
+
+- name: Install git on Debian
+  apt:
+    name: git
+    state: present
+    update_cache: yes

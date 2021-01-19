@@ -1,0 +1,87 @@
+---
+# tasks file for roles/httpd_centos
+
+- name: Install httpd
+  yum:
+    name: httpd
+    state: present
+    update_cache: yes
+
+#- name: Check if there is a default index.html file
+#  stat:
+#    path: /var/www/html/index.html
+#  register: index_file
+#
+#- name: Create a backup file for default index.html file
+#  command: "mv /var/www/html/index.html /var/www/html/index.html.bak"
+#  when: index_file.stat.exists
+
+- name: Copy from config_files/index.html to /var/www/html/index.html
+  copy:
+    src: config_files/index.html
+    dest: /var/www/html/index.html
+    backup: yes
+
+- name: Create folder named ervie_debian.com
+  file:
+    path: /var/www/html/ervie_centos.com
+    state: directory
+    owner: erviejohn
+    group: erviejohn
+    mode: '0755'
+  register: create_host
+
+- name: Create folder named log and html in /var/www/html/ervie_centos.com/
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /var/www/html/ervie_centos.com/log
+    - /var/www/html/ervie_centos.com/html    
+
+- name: Copy from config_files/index_centos.html to /var/www/html/index.html
+  copy:
+    src: config_files/index_centos.html
+    dest: /var/www/html/ervie_centos.com/index.html
+ 
+- name: Create folder named sites-available and sites-enabled in /etc/httpd/
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /etc/httpd/sites-available
+    - /etc/httpd/sites-enabled
+
+- name: add IncludeOptional sites-enabled/*.conf in httpd.conf
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    insertafter: 'IncludeOptional conf.d/*.conf'
+    line: IncludeOptional sites-enabled/*.conf
+
+- name: Copy from ervie_centos.com.conf to /etc/httpd/sites-available/
+  copy:
+    src: config_files/ervie_centos.com.conf
+    dest: /etc/httpd/sites-available/ervie_centos.com.conf
+
+- name: Set a universal Apache policy
+  seboolean:
+    name: httpd_unified
+    state: yes
+    persistent: yes
+
+- name: Allow apache to generate and appent to web application log files
+  sefcontext:
+    target: "/var/www/ervie_centos.com/log(/.*)?"
+    setype: httpd_log_t
+    state: present
+  register: httpd_log
+
+- name: Apply changes on reboot
+  shell: "restorecon -R -v /var/www/ervie_centos.com/log"
+  when: httpd_log.changed
+
+- name: Start httpd service
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes

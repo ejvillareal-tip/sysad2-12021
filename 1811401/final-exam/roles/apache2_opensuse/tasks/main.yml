@@ -1,0 +1,42 @@
+---
+# tasks file for roles/apache2_opensuse
+
+- name: Install apache2
+  zypper:
+    name: apache2
+    state: present
+    update_cache: yes
+
+- name: Copy from config_files/ervie_opensuse.com.conf to /etc/apache2/conf.d/
+  copy:
+    src: config_files/ervie_opensuse.com.conf
+    dest: /etc/apache2/conf.d/ervie_opensuse.com.conf
+
+- name: Create Directory named ervie_opensuse
+  file:
+    path: /srv/www/htdocs/ervie_opensuse
+    state: directory
+
+- name: Set /srv/www/ as ervie owner and group
+  file:
+    path: /srv/www/
+    recurse: yes
+#    owner: erviejohn
+#    group: erviejohn
+    mode: '0755'
+    
+- name: Copy from config_files/index_opensuse.html to /srv/www/htdocs/ervie_opensuse
+  copy:
+    src: config_files/index_opensuse.html
+    dest: /srv/www/htdocs/ervie_opensuse/index.html
+
+- name: Insert virtual host in /etc/hosts
+  lineinfile:
+    path: /etc/hosts
+    line: 192.168.1.25 www.ervie_opensuse.com
+
+- name: Start apache2 service
+  systemd:
+    name: apache2
+    state: started
+    enabled: yes

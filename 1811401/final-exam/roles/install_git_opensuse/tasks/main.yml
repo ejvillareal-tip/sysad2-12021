@@ -1,0 +1,14 @@
+---
+# tasks file for roles/install_git_opensuse
+
+- name: Install git on OpenSuse
+  zypper:
+    name: git
+    state: present
+    update_cache: yes
+
+- name: Install git-core on OpenSuse
+  zypper:
+    name: git-core
+    state: present
+    update_cache: yes

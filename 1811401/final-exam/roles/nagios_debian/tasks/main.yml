@@ -1,0 +1,171 @@
+---
+# tasks file for roles/nagios_debian
+
+- name: Install Prerequisite of nagios
+  apt:
+    name:
+      - vim 
+      - wget 
+      - curl 
+      - build-essential 
+      - unzip 
+      - openssl 
+      - libssl-dev 
+      - apache2 
+      - php 
+      - libapache2-mod-php 
+      - php-gd 
+      - libgd-dev
+    state: present
+    update_cache: yes
+
+- name: Install python3 and python3-pip
+  apt:
+    name:
+      - python3
+      - python3-pip
+    state: present
+    update_cache: yes
+
+- name: Install passlib to create an admin user
+  pip:
+    name: passlib
+
+- name: Download nagios-4.4.6.tar.gz
+  get_url:
+    url: https://github.com/NagiosEnterprises/nagioscore/releases/download/nagios-4.4.6/nagios-4.4.6.tar.gz
+    dest: /tmp/nagios-4.4.6.tar.gz
+
+- name: Unarchive nagios-4.4.6.tar.gz
+  unarchive:
+    src: /tmp/nagios-4.4.6.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  register: unarchive_nagios
+
+- name: Compile the extracted files
+  shell:
+    chdir: /tmp/nagios-4.4.6
+    cmd: "./configure --with-httpd-conf=/etc/apache2/sites-enabled"
+  when: unarchive_nagios.changed
+
+- name: Install-group-users on /tmp/nagios-4.4.6
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: install-groups-users
+  when: unarchive_nagios.changed
+
+- name: Add the user to the Apache web server group
+  user:
+    name: debian-nagios-ervs
+    comment: New user for nagios
+    group: www-data
+    append: yes
+
+- name: Compile the main Nagios program and CGIs
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: all
+  when: unarchive_nagios.changed
+
+- name: Install Nagios Core main program, CGIs, and HTML files
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: install
+  when: unarchive_nagios.changed
+
+- name: Install Nagios Core startup scripts
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: install-init
+  when: unarchive_nagios.changed
+
+- name: Initialize the init scripts
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: install-daemoninit
+  when: unarchive_nagios.changed
+
+- name: Install and configure permissions on the directory for holding the Nagios Core external command file
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: install-commandmode
+  when: unarchive_nagios.changed
+
+- name: Install Nagios Core sample configuration files in /usr/local/nagios/etc
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: install-config
+  when: unarchive_nagios.changed
+
+- name: Install Apache configuration file for the Nagios web interface
+  make:
+    chdir: /tmp/nagios-4.4.6
+    target: install-webconf
+  when: unarchive_nagios.changed
+
+- name: Enable apache2 rewrite
+  apache2_module:
+    state: present
+    name: "{{ item }}"
+  loop:
+    - rewrite
+    - cgi
+
+- name: Configure Nagios Core Web Interface basic authentication
+  htpasswd:
+    path: /usr/local/nagios/etc/htpasswd.users
+    name: ervie-admin-debian
+    password: ervieadmin
+#    crypt_scheme: md5_crypt
+  register: config_auth
+
+- name: Give appropriate permissions to the (/usr/local/nagios/etc/htpasswd.users) file
+  file:
+    path: /usr/local/nagios/etc/htpasswd.users
+    owner: www-data
+    group: www-data
+    mode: '0640'
+
+- name: Download nagios plugins
+  get_url:
+    url: https://github.com/nagios-plugins/nagios-plugins/releases/download/release-2.3.3/nagios-plugins-2.3.3.tar.gz
+    dest: /tmp/
+  register: download_plugins
+
+- name: Extract the nagios plugins
+  unarchive:
+    src: /tmp/nagios-plugins-2.3.3.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: download_plugins.changed
+
+- name: Compile nagios plugins
+  shell: 
+    chdir: /tmp/nagios-plugins-2.3.3
+    cmd: "./configure" 
+  when: download_plugins.changed
+
+- name: build the default nagios plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.3.3/
+  when: download_plugins.changed
+
+- name: install in nagios plugins
+  make:
+    chdir: /tmp/nagios-plugins-2.3.3/
+    target: install
+  when: download_plugins.changed
+
+- name: Enable and Start nagios
+  systemd:
+    name: nagios
+    state: started
+    enabled: yes
+
+- name: Restart and Enabled apache2
+  systemd:
+    name: apache2
+    state: restarted
+    enabled: yes
+  when: config_auth.changed
