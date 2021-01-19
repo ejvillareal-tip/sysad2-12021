@@ -10,7 +10,7 @@
         name: ufw
         state: stopped
         enabled: no
-      when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+      when: ansible_distribution == 'Debian'
 
     - name: Stop firewalld on CentOS and OpenSuse # same command
       service:
@@ -43,7 +43,48 @@
       include_role:
         name: git_clone
 
-# Install and configure one enterprise service that can be installed in Debian,Centos and OpenSuse serversInstall and configure one enterprise service that can be installed in Debian,Centos and OpenSuse servers
+- hosts: install_docker
+  tasks:
+    - name: Install docker on Debian
+      include_role:
+        name: install-docker-debian
+      when: ansible_distribution == 'Debian'
+
+    - name: Install docker on CentOS
+      include_role:
+        name: install-docker-centos
+      when: ansible_distribution == 'CentOS'
+
+    - name: Install docker on Debian
+      include_role:
+        name: install-docker-opensuse
+      when: ansible_os_family == 'Suse'
+
+## Install and configure one enterprise service that can be installed in Debian,Centos and OpenSuse serversInstall and configure one enterprise service that can be installed in Debian,Centos and OpenSuse servers
+# via Docker Containerization
+- hosts: httpd
+  tasks:
+    - name: Install httpd in a docker containerization
+      include_role:
+        name: install-httpd-docker
+
+# Install and configure one monitoring tool that can be installed in Debian, Centos and OpenSuse servers (if it is a stack there should be option of different host)        
+# via Docker Containerization
+- hosts: elasticstack
+  tasks:
+    - name: Install ElasticStack in a docker containerization
+      include_role:
+        name: install-ElasticStack-docker
+
+# Change Motd as "Ansible Managed by <username>"      
+- hosts: motd
+  tasks:
+    - name: Change Motd on Debian, CentOS, and OpenSuse
+      include_role:
+        name: motd      
+
+## Install and configure one enterprise service that can be installed in Debian,Centos and OpenSuse serversInstall and configure one enterprise service that can be installed in Debian,Centos and OpenSuse servers
+# via Ansible Playbook
 - hosts: enterprise_service
   tasks:
     - name: Install and Configure Apache2 on Debian
@@ -61,14 +102,8 @@
         name: apache2_opensuse
       when: ansible_os_family == 'Suse'
 
-# Change Motd as "Ansible Managed by <username>"      
-- hosts: motd
-  tasks:
-    - name: Change Motd on Debian, CentOS, and OpenSuse
-      include_role:
-        name: motd      
-
 # Install and configure one monitoring tool that can be installed in Debian, Centos and OpenSuse servers (if it is a stack there should be option of different host)        
+# via Ansible Playbook
 - hosts: nagios
   tasks:
     - name: Install and Configure Nagios Core on Debian

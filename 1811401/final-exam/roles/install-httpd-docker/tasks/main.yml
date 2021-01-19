@@ -1,0 +1,37 @@
+---
+# tasks file for roles/install-httpd-docker
+
+- name: Pull image of httpd
+  docker_image:
+    name: "httpd:2.4.46"
+    source: pull
+  register: pull_image
+
+- name: Restart Docker
+  systemd:
+    name: docker
+    state: restarted
+  when: pull_image.changed
+
+- name: Create Docker Volume
+  docker_volume:
+    name: apache-data
+
+- name: Create symbolic link
+  file:
+    src: "/var/lib/docker/volumes/apache-data/_data"
+    dest: "/apache"
+    state: link
+
+- name: Copy index-docker.html to /var/lib/docker/volumes/apache-data/_data/
+  copy:
+    src: config_files/index_docker.html
+    dest: /var/lib/docker/volumes/apache-data/_data/index.html
+
+- name: Run httpd container
+  docker_container:
+    name: apache-server
+    image: "httpd:2.4.46"
+    published_ports: 80:80
+    volumes:
+      - apache-data:/usr/local/apache2/htdocs
