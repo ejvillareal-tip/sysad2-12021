@@ -6,8 +6,8 @@ username: ervie-admin-debian
 password: ervieadmin  
 
 **CentOS**  
-username: ervie-admin-centos
-password: ervieadmin
+username: ervie-admin-centos  
+password: ervieadmin  
 
 **OpenSuse**  
 username: ervie-admin-opensuse  
