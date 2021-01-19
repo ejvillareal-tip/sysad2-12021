@@ -1,17 +1,17 @@
 # Hands-on Final Exam
 
 ## Nagios Login Information
-**Debian**
-username: ervie-admin-debian
-password: ervieadmin
+**Debian**  
+username: ervie-admin-debian  
+password: ervieadmin  
 
-**CentOS**
+**CentOS**  
 username: ervie-admin-centos
 password: ervieadmin
 
-**OpebSuse*
-username: ervie-admin-opensuse
-password: ervieadmin
+**OpebSuse**  
+username: ervie-admin-opensuse  
+password: ervieadmin  
 
 ## Directory Structure
 
