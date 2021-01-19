@@ -9,7 +9,7 @@ password: ervieadmin
 username: ervie-admin-centos
 password: ervieadmin
 
-**OpebSuse**  
+**OpenSuse**  
 username: ervie-admin-opensuse  
 password: ervieadmin  
 
